@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  database_ignite:
+    image: postgres
+    container_name: database_ignite
+    restart: always
+    ports:
+      # Porta 5432 é padrão do postgres
+      - 5432:5432
+    environment: 
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=ignite
+      - POSTGRES_DB=rentalkx
+    volumes:
+      - pgdata:/data/postgres
+  
+  app:
+    build: .
+    container_name: rentalkx
+    ports:
+      # Mapeamento da porta 3333 do container para a porta 3333 da nossa maquina
+      - 3333:3333
+    volumes:
+      # . -> indica que queremos pegar todos os arquivos do diretório atual
+      # : -> indica que queremos enviar esses arquivos para o diretório a seguir
+      - .:/usr/app
+    links:
+      - database_ignite
+    depends_on:
+      - database_ignite
+
+volumes: 
+  pgdata:
+    driver: local
